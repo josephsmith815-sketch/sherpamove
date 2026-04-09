@@ -1377,7 +1377,7 @@ function collectData(step) {
 }
 
 // ── SUBMIT / CONFIRMATION ──
-function submitForm() {
+async function submitForm() {
   if (!validateStep(6)) return;
   collectData(6);
 
@@ -1406,10 +1406,45 @@ function submitForm() {
   `;
 
   document.getElementById('summaryContent').innerHTML = summaryHTML;
-  document.getElementById('confirmScreen').classList.add('active');
 
-  // Log to console (in prod, send to API/webhook)
-  console.log('SherpaMove Lead:', JSON.stringify(formData, null, 2));
+  // POST lead data to Zapier webhook
+  const payload = {
+    firstName:       formData.firstName,
+    lastName:        formData.lastName,
+    email:           formData.email,
+    phone:           formData.phone,
+    moveType:        formData.moveType,
+    homeSize:        formData.homeSize,
+    fromLocation:    formData.fromLocation,
+    toLocation:      formData.toLocation,
+    moveDate:        formData.moveDate,
+    moveFlexibility: formData.moveFlexibility,
+    services:        formData.services,
+    budget:          formData.budget,
+    accessType:      formData.accessType,
+    referralSource:  formData.referralSource,
+    notes:           formData.notes
+  };
+
+  try {
+    const res = await fetch('https://hooks.zapier.com/hooks/catch/27159971/u7z3f0a/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    console.log('SherpaMove Lead submitted successfully.');
+  } catch (err) {
+    console.error('Zapier webhook error:', err);
+    // Show a non-blocking warning — lead is not lost, confirmation screen still appears
+    const warning = document.createElement('div');
+    warning.textContent = 'Note: There was an issue submitting your details. Our team will follow up shortly.';
+    warning.style.cssText = 'background:#fff3cd;color:#856404;border:1px solid #ffc107;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:14px;';
+    const confirmScreen = document.getElementById('confirmScreen');
+    confirmScreen.insertBefore(warning, confirmScreen.firstChild);
+  }
+
+  document.getElementById('confirmScreen').classList.add('active');
 }
 
 // ── PHONE FORMAT ──
