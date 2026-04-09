@@ -1427,12 +1427,14 @@ async function submitForm() {
   };
 
   try {
-    const res = await fetch('https://hooks.zapier.com/hooks/catch/27159971/u7z3f0a/', {
+    // mode:'no-cors' + Content-Type:'text/plain' avoids a CORS preflight —
+    // Zapier still receives and parses the JSON body correctly.
+    await fetch('https://hooks.zapier.com/hooks/catch/27159971/u7z3f0a/', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload)
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     console.log('SherpaMove Lead submitted successfully.');
   } catch (err) {
     console.error('Zapier webhook error:', err);
