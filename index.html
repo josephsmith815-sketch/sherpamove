@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SherpaMove — Find Your Mover</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --slate:       #1C2B35;
+  --slate-mid:   #2E404F;
+  --slate-light: #3D5465;
+  --terracotta:  #C8573A;
+  --terra-hover: #B04530;
+  --terra-light: #E07A5F;
+  --sand:        #F2E8D9;
+  --sand-mid:    #E8D9C0;
+  --snow:        #FAF8F4;
+  --gold:        #D4A853;
+  --forest:      #3A5A3F;
+  --ink:         #0F1A20;
+  --error:       #D94F4F;
+}
+
+html, body {
+  min-height: 100vh;
+  font-family: 'DM Sans', sans-serif;
+  background: var(--slate);
+  color: var(--snow);
+  overflow-x: hidden;
+}
+
+/* ── MOUNTAIN BG ── */
+.page-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: var(--slate);
+  overflow: hidden;
+}
+
+.page-bg::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 55%;
+  background: var(--slate-mid);
+  clip-path: polygon(0 100%, 0 70%, 15% 45%, 28% 60%, 42% 25%, 55% 50%, 68% 30%, 80% 55%, 92% 38%, 100% 50%, 100% 100%);
+}
+
+.page-bg::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 30%;
+  background: rgba(0,0,0,0.2);
+  clip-path: polygon(0 100%, 0 80%, 20% 55%, 38% 75%, 55% 50%, 72% 70%, 88% 48%, 100% 62%, 100% 100%);
+}
+
+/* Noise grain */
+.page-bg .grain {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ── LAYOUT ── */
+.page-wrap {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── NAV ── */
+nav {
+  padding: 20px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.08em;
+  color: var(--snow);
+  text-decoration: none;
+}
+
+.nav-logo span { color: var(--terracotta); }
+
+.nav-trust {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.05em;
+}
+
+.nav-trust svg {
+  width: 14px; height: 14px;
+  stroke: var(--gold);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ── MAIN FUNNEL ── */
+.funnel-outer {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 20px 60px;
+}
+
+.funnel-card {
+  background: var(--snow);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 560px;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05);
+  color: var(--ink);
+}
+
+/* ── PROGRESS BAR ── */
+.progress-bar-wrap {
+  height: 5px;
+  background: var(--sand-mid);
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(to right, var(--terracotta), var(--terra-light));
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0 3px 3px 0;
+}
+
+/* ── STEP HEADER ── */
+.step-header {
+  background: var(--slate);
+  padding: 28px 36px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.step-counter {
+  background: var(--terracotta);
+  color: #fff;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: 0.05em;
+}
+
+.step-header-text h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 18px;
+  color: var(--snow);
+  line-height: 1.2;
+}
+
+.step-header-text p {
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  margin-top: 3px;
+  letter-spacing: 0.03em;
+}
+
+/* ── STEP BODY ── */
+.step-body {
+  padding: 36px;
+}
+
+/* ── STEP TRANSITIONS ── */
+.step {
+  display: none;
+}
+.step.active {
+  display: block;
+  animation: stepIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes stepIn {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes stepBack {
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.step.back-active {
+  display: block;
+  animation: stepBack 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* ── FORM FIELDS ── */
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.field {
+  margin-bottom: 18px;
+}
+
+.field label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--slate-light);
+  margin-bottom: 7px;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1.5px solid #D5DDE0;
+  border-radius: 5px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  color: var(--slate);
+  background: var(--snow);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231C2B35' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--terracotta);
+  box-shadow: 0 0 0 3px rgba(200, 87, 58, 0.1);
+}
+
+.field input.error,
+.field select.error {
+  border-color: var(--error);
+  box-shadow: 0 0 0 3px rgba(217,79,79,0.1);
+}
+
+.error-msg {
+  font-size: 11px;
+  color: var(--error);
+  margin-top: 5px;
+  display: none;
+}
+
+.error-msg.visible { display: block; }
+
+/* ── OPTION CARDS (radio-style) ── */
+.option-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.option-grid.cols-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.option-card {
+  border: 1.5px solid #D5DDE0;
+  border-radius: 6px;
+  padding: 16px 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  user-select: none;
+}
+
+.option-card:hover {
+  border-color: var(--terracotta);
+  background: #FDF4F1;
+}
+
+.option-card.selected {
+  border-color: var(--terracotta);
+  background: #FDF4F1;
+  box-shadow: 0 0 0 3px rgba(200,87,58,0.12);
+}
+
+.option-card input[type="radio"] {
+  display: none;
+}
+
+.option-radio {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #C5D0D5;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s;
+}
+
+.option-card.selected .option-radio {
+  border-color: var(--terracotta);
+}
+
+.option-radio::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--terracotta);
+  transform: scale(0);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.option-card.selected .option-radio::after {
+  transform: scale(1);
+}
+
+.option-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.option-text strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--slate);
+}
+
+.option-text span {
+  font-size: 12px;
+  color: #7A8C95;
+}
+
+/* ── STEP INTRO TEXT ── */
+.step-intro {
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px;
+  color: var(--slate);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.step-intro em { color: var(--terracotta); font-style: italic; }
+
+.step-sub {
+  font-size: 13px;
+  color: #7A8C95;
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+/* ── NAVIGATION BUTTONS ── */
+.btn-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+  align-items: center;
+}
+
+.btn-next {
+  flex: 1;
+  padding: 16px 24px;
+  background: var(--terracotta);
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-next:hover { background: var(--terra-hover); transform: translateY(-1px); }
+.btn-next:active { transform: translateY(0); }
+
+.btn-back {
+  padding: 16px 18px;
+  background: transparent;
+  color: #8A9BA5;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1.5px solid #D5DDE0;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-back:hover {
+  border-color: var(--slate);
+  color: var(--slate);
+}
+
+/* ── TRUST STRIP ── */
+.trust-strip {
+  border-top: 1px solid var(--sand-mid);
+  padding: 16px 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background: var(--sand);
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #6A7D85;
+  letter-spacing: 0.04em;
+}
+
+.trust-item svg {
+  width: 13px; height: 13px;
+  stroke: var(--forest);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+/* ── CONFIRMATION SCREEN ── */
+.confirm-screen {
+  display: none;
+  padding: 0;
+}
+
+.confirm-screen.active {
+  display: block;
+  animation: stepIn 0.4s ease both;
+}
+
+.confirm-header {
+  background: var(--forest);
+  padding: 36px;
+  text-align: center;
+}
+
+.confirm-icon {
+  width: 64px;
+  height: 64px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.confirm-icon svg {
+  width: 32px; height: 32px;
+  stroke: #fff;
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.confirm-header h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 26px;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.confirm-header p {
+  font-size: 14px;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.6;
+}
+
+.confirm-body {
+  padding: 36px;
+}
+
+.confirm-summary {
+  background: var(--sand);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.confirm-summary h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 16px;
+  color: var(--slate);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--sand-mid);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 6px 0;
+  font-size: 13px;
+}
+
+.summary-row .label {
+  color: #7A8C95;
+  font-weight: 500;
+}
+
+.summary-row .value {
+  color: var(--slate);
+  font-weight: 600;
+  text-align: right;
+  max-width: 60%;
+}
+
+.confirm-next-steps {
+  margin-top: 24px;
+}
+
+.confirm-next-steps h3 {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8A9BA5;
+  margin-bottom: 16px;
+}
+
+.next-step-item {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 16px;
+  align-items: flex-start;
+}
+
+.next-step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--terracotta);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.next-step-item p {
+  font-size: 13px;
+  color: var(--slate);
+  line-height: 1.55;
+}
+
+.next-step-item p strong {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+/* ── SHERPA QUOTE ── */
+.sherpa-quote {
+  background: var(--slate);
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin-top: 24px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.sherpa-avatar {
+  width: 40px; height: 40px;
+  background: var(--terracotta);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.sherpa-quote p {
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--sand);
+  line-height: 1.6;
+}
+
+.sherpa-quote cite {
+  display: block;
+  font-style: normal;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  margin-top: 6px;
+  letter-spacing: 0.05em;
+}
+
+/* ── PHONE INPUT ── */
+.phone-prefix {
+  display: flex;
+  border: 1.5px solid #D5DDE0;
+  border-radius: 5px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.phone-prefix:focus-within {
+  border-color: var(--terracotta);
+  box-shadow: 0 0 0 3px rgba(200,87,58,0.1);
+}
+
+.phone-prefix .prefix {
+  background: var(--sand);
+  padding: 13px 12px;
+  font-size: 15px;
+  color: var(--slate-light);
+  font-weight: 500;
+  border-right: 1.5px solid #D5DDE0;
+  flex-shrink: 0;
+}
+
+.phone-prefix input {
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  flex: 1;
+}
+
+.phone-prefix input:focus {
+  border: none;
+  box-shadow: none;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  nav { padding: 16px 20px; }
+  .step-body { padding: 24px 20px; }
+  .trust-strip { padding: 14px 20px; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .field-row { grid-template-columns: 1fr; gap: 0; }
+  .option-grid.cols-2 { grid-template-columns: 1fr; }
+  .step-header { padding: 20px; }
+  .confirm-body { padding: 24px 20px; }
+}
+
+/* ── PROGRESS STEPS ── */
+.step-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  background: var(--slate-mid);
+}
+
+.step-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  transition: all 0.3s;
+}
+
+.step-dot.done {
+  background: var(--terracotta);
+  width: 20px;
+  border-radius: 4px;
+}
+
+.step-dot.active {
+  background: var(--snow);
+}
+</style>
+</head>
+<body>
+
+<div class="page-bg"><div class="grain"></div></div>
+
+<div class="page-wrap">
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo"><span>Sherpa</span>MOVE</a>
+    <div class="nav-trust">
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Trusted by 50,000+ movers
+    </div>
+  </nav>
+
+  <!-- FUNNEL -->
+  <div class="funnel-outer">
+    <div class="funnel-card">
+
+      <!-- Progress -->
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressBar" style="width: 14%"></div>
+      </div>
+
+      <!-- Step Dots -->
+      <div class="step-dots" id="stepDots">
+        <div class="step-dot active" data-step="0"></div>
+        <div class="step-dot" data-step="1"></div>
+        <div class="step-dot" data-step="2"></div>
+        <div class="step-dot" data-step="3"></div>
+        <div class="step-dot" data-step="4"></div>
+        <div class="step-dot" data-step="5"></div>
+        <div class="step-dot" data-step="6"></div>
+      </div>
+
+      <!-- ══ STEP 1: Move Type ══ -->
+      <div class="step active" id="step-0">
+        <div class="step-header">
+          <div class="step-counter">1</div>
+          <div class="step-header-text">
+            <h2>What type of move are you planning?</h2>
+            <p>Step 1 of 7 — Let's start with the basics</p>
+          </div>
+        </div>
+        <div class="step-body">
+          <p class="step-intro">Tell us about your <em>move type</em></p>
+          <p class="step-sub">We'll match you with movers who specialize in exactly what you need.</p>
+
+          <div class="option-grid">
+            <label class="option-card" onclick="selectOption(this, 'moveType', 'Local Move (Under 100 miles)')">
+              <input type="radio" name="moveType" value="Local Move (Under 100 miles)">
+              <div class="option-radio"></div>
+              <span class="option-icon">🏙️</span>
+              <div class="option-text">
+                <strong>Local Move</strong>
+                <span>Under 100 miles</span>
+              </div>
+            </label>
+            <label class="option-card" onclick="selectOption(this, 'moveType', 'Long Distance (100+ miles)')">
+              <input type="radio" name="moveType" value="Long Distance (100+ miles)">
+              <div class="option-radio"></div>
+              <span class="option-icon">🗺️</span>
+              <div class="option-text">
+                <strong>Long Distance</strong>
+                <span>100+ miles</span>
+              </div>
+            </label>
+            <label class="option-card" onclick="selectOption(this, 'moveType', 'Interstate / Cross-Country')">
+              <input type="radio" name="moveType" value="Interstate / Cross-Country">
+              <div class="option-radio"></div>
+              <span class="option-icon">🇺🇸</span>
+              <div class="option-text">
+                <strong>Interstate</strong>
+                <span>Cross-country</span>
+              </div>
+            </label>
+            <label class="option-card" onclick="selectOption(this, 'moveType', 'International Move')">
+              <input type="radio" name="moveType" value="International Move">
+              <div class="option-radio"></div>
+              <span class="option-icon">✈️</span>
+              <div class="option-text">
+                <strong>International</strong>
+                <span>Outside the US</span>
+              </div>
+            </label>
+          </div>
+          <div class="btn-row">
+            <button class="btn-next" onclick="nextStep(0)">Continue <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+          </div>
+        </div>
+        <div class="trust-strip">
+          <div class="trust-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> No commitment</div>
+          <div class="trust-item"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> 100% free service</div>
+          <div class="trust-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Takes 2 minutes</div>
+        </div>
+      </div>
+
+      <!-- ══ STEP 2: Home Size ══ -->
+      <div class="step" id="step-1">
+        <div class="step-header">
+          <div class="step-counter">2</div>
+          <div class="step-header-text">
+            <h2>How big is your home?</h2>
+            <p>Step 2 of 7 — Home size helps movers estimate the job</p>
+          </div>
+        </div>
+        <div class="step-body">
+          <p class="step-intro">What's your current <em>home size?</em></p>
+          <p class="step-sub">This helps movers estimate truck size and crew needed.</p>
+
+          <div class="option-grid cols-2">
+            <label class="option-card" onclick="selectOption(this, 'homeSize', 'Studio / 1BR')">
+              <input type="radio" name="homeSize" value="Studio / 1BR">
+              <div class="option-radio"></div>
+              <span class="option-icon">🛏️</span>
+              <div class="option-text"><strong>Studio / 1BR</strong></div>
+            </label>
+            <label class="option-card" onclick="selectOption(this, 'homeSize', '2 Bedrooms')">
+              <input type="radio" name="homeSize" value="2 Bedrooms">
+              <div class="option-radio"></div>
+              <span class="option-icon">🏠</span>
+              <div class="option-text"><strong>2 Bedrooms</strong></div>
+            </label>
+            <label class="option-card" onclick="selectOption(this, 'homeSize', '3 Bedrooms')">
+              <input type="radio" name="homeSize" value="3 Bedrooms">
+              <div class="option-radio"></div>
+              <span class="option-icon">🏡</span>
+              <div class="option-text"><strong>3 Bedrooms</strong></div>
+            </label>
+            <label class="option-card" onclick="selectOption(this, 'homeSize', '4+ Bedrooms')">
+              <input type="radio" name="homeSize" value="4+ Bedrooms">
+              <div class="option-radio"></div>
+              <span class="option-icon">🏘️</span>
+              <div class="option-text"><strong>4+ Bedrooms</strong></div>
+            </label>
+            <label class="option-card" onclick="selectOption(this, 'homeSize', 'Office / Commercial')">
+              <input type="radio" name="homeSize" value="Office / Commercial">
+              <div class="option-radio"></div>
+              <span class="option-icon">🏢</span>
+              <div class="option-text"><strong>Commercial</strong></div>
+            </label>
+            <label class="option-card" onclick="selectOption(this, 'homeSize', 'Storage Unit')">
+              <input type="radio" name="homeSize" value="Storage Unit">
+              <div class="option-radio"></div>
+              <span class="option-icon">📦</span>
+              <div class="option-text"><strong>Storage Unit</strong></div>
+            </label>
+          </div>
+          <div class="btn-row">
+            <button class="btn-back" onclick="prevStep(1)">← Back</button>
+            <button class="btn-next" onclick="nextStep(1)">Continue <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+          </div>
+        </div>
+        <div class="trust-strip">
+          <div class="trust-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> No commitment</div>
+          <div class="trust-item"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> 100% free service</div>
+          <div class="trust-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Takes 2 minutes</div>
+        </div>
+      </div>
+
+      <!-- ══ STEP 3: Locations ══ -->
+      <div class="step" id="step-2">
+        <div class="step-header">
+          <div class="step-counter">3</div>
+          <div class="step-header-text">
+            <h2>Where are you moving from and to?</h2>
+            <p>Step 3 of 7 — Location details for accurate matching</p>
+          </div>
+        </div>
+        <div class="step-body">
+          <p class="step-intro">Your <em>move route</em></p>
+          <p class="step-sub">Enter your origin and destination so we can match local and long-distance movers.</p>
+
+          <div class="field">
+            <label>Moving From — City or Zip Code</label>
+            <input type="text" id="fromLocation" placeholder="e.g. Denver, CO or 80202">
+          </div>
+          <div class="field">
+            <label>Moving To — City or Zip Code</label>
+            <input type="text" id="toLocation" placeholder="e.g. Austin, TX or 78701">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Move Date</label>
+              <input type="date" id="moveDate">
+            </div>
+            <div class="field">
+              <label>Flexibility</label>
+              <select id="moveFlexibility">
+                <option value="">Select...</option>
+                <option>Exact date needed</option>
+                <option>± 1 week flexible</option>
+                <option>± 2 weeks flexible</option>
+                <option>Very flexible (1+ month)</option>
+              </select>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-back" onclick="prevStep(2)">← Back</button>
+            <button class="btn-next" onclick="nextStep(2)">Continue <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+          </div>
+        </div>
+        <div class="trust-strip">
+          <div class="trust-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> No commitment</div>
+          <div class="trust-item"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> 100% free service</div>
+          <div class="trust-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Takes 2 minutes</div>
+        </div>
+      </div>
+
+      <!-- ══ STEP 4: Services ══ -->
+      <div class="step" id="step-3">
+        <div class="step-header">
+          <div class="step-counter">4</div>
+          <div class="step-header-text">
+            <h2>What services do you need?</h2>
+            <p>Step 4 of 7 — Select all that apply</p>
+          </div>
+        </div>
+        <div class="step-body">
+          <p class="step-intro">Choose your <em>move services</em></p>
+          <p class="step-sub">Select everything you'll need — movers will quote accordingly.</p>
+
+          <div class="option-grid" id="servicesGrid">
+            <label class="option-card" onclick="toggleService(this, 'Packing & Unpacking')">
+              <div class="option-radio"></div>
+              <span class="option-icon">📦</span>
+              <div class="option-text"><strong>Packing & Unpacking</strong><span>Full-service packing</span></div>
+            </label>
+            <label class="option-card" onclick="toggleService(this, 'Loading & Unloading Only')">
+              <div class="option-radio"></div>
+              <span class="option-icon">🔄</span>
+              <div class="option-text"><strong>Loading & Unloading Only</strong><span>I'm handling packing</span></div>
+            </label>
+            <label class="option-card" onclick="toggleService(this, 'Furniture Assembly / Disassembly')">
+              <div class="option-radio"></div>
+              <span class="option-icon">🔧</span>
+              <div class="option-text"><strong>Furniture Assembly</strong><span>Disassemble & reassemble</span></div>
+            </label>
+            <label class="option-card" onclick="toggleService(this, 'Storage Solutions')">
+              <div class="option-radio"></div>
+              <span class="option-icon">🏪</span>
+              <div class="option-text"><strong>Storage Solutions</strong><span>Short or long-term</span></div>
+            </label>
+            <label class="option-card" onclick="toggleService(this, 'Specialty Item Handling')">
+              <div class="option-radio"></div>
+              <span class="option-icon">🎹</span>
+              <div class="option-text"><strong>Specialty Items</strong><span>Piano, art, antiques</span></div>
+            </label>
+            <label class="option-card" onclick="toggleService(this, 'Junk Removal')">
+              <div class="option-radio"></div>
+              <span class="option-icon">🗑️</span>
+              <div class="option-text"><strong>Junk Removal</strong><span>Haul away unwanted items</span></div>
+            </label>
+          </div>
+          <div class="btn-row">
+            <button class="btn-back" onclick="prevStep(3)">← Back</button>
+            <button class="btn-next" onclick="nextStep(3)">Continue <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+          </div>
+        </div>
+        <div class="trust-strip">
+          <div class="trust-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> No commitment</div>
+          <div class="trust-item"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> 100% free service</div>
+          <div class="trust-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Takes 2 minutes</div>
+        </div>
+      </div>
+
+      <!-- ══ STEP 5: Budget ══ -->
+      <div class="step" id="step-4">
+        <div class="step-header">
+          <div class="step-counter">5</div>
+          <div class="step-header-text">
+            <h2>What's your approximate budget?</h2>
+            <p>Step 5 of 7 — Help movers calibrate their quotes</p>
+          </div>
+        </div>
+        <div class="step-body">
+          <p class="step-intro">Your <em>budget range</em></p>
+          <p class="step-sub">This is just a guide — movers will provide their best competitive quotes.</p>
+
+          <div class="option-grid">
+            <label class="option-card" onclick="selectOption(this, 'budget', 'Under $500')">
+              <input type="radio" name="budget" value="Under $500">
+              <div class="option-radio"></div>
+              <span class="option-icon">💚</span>
+              <div class="option-text"><strong>Under $500</strong><span>Small / local move</span></div>
+            </label>
+            <label class="option-card" onclick="selectOption(this, 'budget', '$500 – $1,500')">
+              <input type="radio" name="budget" value="$500 – $1,500">
+              <div class="option-radio"></div>
+              <span class="option-icon">💛</span>
+              <div class="option-text"><strong>$500 – $1,500</strong><span>Apartment move</span></div>
+            </label>
+            <label class="option-card" onclick="selectOption(this, 'budget', '$1,500 – $3,000')">
+              <input type="radio" name="budget" value="$1,500 – $3,000">
+              <div class="option-radio"></div>
+              <span class="option-icon">🧡</span>
+              <div class="option-text"><strong>$1,500 – $3,000</strong><span>Standard house move</span></div>
+            </label>
+            <label class="option-card" onclick="selectOption(this, 'budget', '$3,000 – $6,000')">
+              <input type="radio" name="budget" value="$3,000 – $6,000">
+              <div class="option-radio"></div>
+              <span class="option-icon">❤️</span>
+              <div class="option-text"><strong>$3,000 – $6,000</strong><span>Long distance</span></div>
+            </label>
+            <label class="option-card" onclick="selectOption(this, 'budget', '$6,000+')">
+              <input type="radio" name="budget" value="$6,000+">
+              <div class="option-radio"></div>
+              <span class="option-icon">💎</span>
+              <div class="option-text"><strong>$6,000+</strong><span>Large or cross-country</span></div>
+            </label>
+            <label class="option-card" onclick="selectOption(this, 'budget', 'Not sure yet')">
+              <input type="radio" name="budget" value="Not sure yet">
+              <div class="option-radio"></div>
+              <span class="option-icon">🤔</span>
+              <div class="option-text"><strong>Not Sure Yet</strong><span>I need guidance</span></div>
+            </label>
+          </div>
+          <div class="btn-row">
+            <button class="btn-back" onclick="prevStep(4)">← Back</button>
+            <button class="btn-next" onclick="nextStep(4)">Continue <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+          </div>
+        </div>
+        <div class="trust-strip">
+          <div class="trust-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> No commitment</div>
+          <div class="trust-item"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> 100% free service</div>
+          <div class="trust-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Takes 2 minutes</div>
+        </div>
+      </div>
+
+      <!-- ══ STEP 6: Special Notes ══ -->
+      <div class="step" id="step-5">
+        <div class="step-header">
+          <div class="step-counter">6</div>
+          <div class="step-header-text">
+            <h2>Any special requirements?</h2>
+            <p>Step 6 of 7 — Optional but helpful</p>
+          </div>
+        </div>
+        <div class="step-body">
+          <p class="step-intro">Anything movers should <em>know about?</em></p>
+          <p class="step-sub">Stairs, elevators, difficult access, fragile items — the more detail, the better your quotes.</p>
+
+          <div class="field">
+            <label>Access Considerations</label>
+            <select id="accessType">
+              <option value="">Select one...</option>
+              <option>Ground floor — easy access</option>
+              <option>Elevator building</option>
+              <option>Walk-up stairs (1–3 flights)</option>
+              <option>Walk-up stairs (4+ flights)</option>
+              <option>Long carry from parking</option>
+              <option>Rural / difficult road access</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>How did you hear about SherpaMove?</label>
+            <select id="referralSource">
+              <option value="">Select one...</option>
+              <option>Google Search</option>
+              <option>Facebook / Instagram</option>
+              <option>Friend or family referral</option>
+              <option>Real estate agent</option>
+              <option>YouTube</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Additional Notes (Optional)</label>
+            <textarea id="notes" rows="3" placeholder="e.g. I have a baby grand piano and 2 large sectionals..." style="resize: vertical;"></textarea>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn-back" onclick="prevStep(5)">← Back</button>
+            <button class="btn-next" onclick="nextStep(5)">Almost Done! <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+          </div>
+        </div>
+        <div class="trust-strip">
+          <div class="trust-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> No commitment</div>
+          <div class="trust-item"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> 100% free service</div>
+          <div class="trust-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Takes 2 minutes</div>
+        </div>
+      </div>
+
+      <!-- ══ STEP 7: Contact Info ══ -->
+      <div class="step" id="step-6">
+        <div class="step-header">
+          <div class="step-counter">7</div>
+          <div class="step-header-text">
+            <h2>Where should we send your quotes?</h2>
+            <p>Step 7 of 7 — Last step!</p>
+          </div>
+        </div>
+        <div class="step-body">
+          <p class="step-intro">Your <em>contact details</em></p>
+          <p class="step-sub">Up to 5 verified movers will reach out with personalized quotes. No spam, ever.</p>
+
+          <div class="field-row">
+            <div class="field">
+              <label>First Name</label>
+              <input type="text" id="firstName" placeholder="Jane">
+            </div>
+            <div class="field">
+              <label>Last Name</label>
+              <input type="text" id="lastName" placeholder="Smith">
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Email Address</label>
+            <input type="email" id="email" placeholder="jane@example.com">
+          </div>
+
+          <div class="field">
+            <label>Phone Number</label>
+            <div class="phone-prefix">
+              <div class="prefix">🇺🇸 +1</div>
+              <input type="tel" id="phone" placeholder="(555) 000-0000" oninput="formatPhone(this)">
+            </div>
+          </div>
+
+          <div style="font-size:11px; color: #9AABB5; margin-top: -8px; margin-bottom: 20px; line-height: 1.5;">
+            By submitting, you agree to be contacted by up to 5 moving companies. SherpaMove does not sell your data to third parties.
+          </div>
+
+          <div class="btn-row" style="margin-top:0;">
+            <button class="btn-back" onclick="prevStep(6)">← Back</button>
+            <button class="btn-next" onclick="submitForm()" style="background: var(--forest);">Get My Free Quotes 🎉</button>
+          </div>
+        </div>
+        <div class="trust-strip">
+          <div class="trust-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> No spam guarantee</div>
+          <div class="trust-item"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Secure & encrypted</div>
+          <div class="trust-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Up to 5 free quotes</div>
+        </div>
+      </div>
+
+      <!-- ══ CONFIRMATION ══ -->
+      <div class="confirm-screen" id="confirmScreen">
+        <div class="confirm-header">
+          <div class="confirm-icon">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h2>You're on the trail! 🏔️</h2>
+          <p>Your request has been sent to verified movers in your area.<br>Expect quotes within 24 hours.</p>
+        </div>
+        <div class="confirm-body">
+          <div class="confirm-summary">
+            <h3>Your Move Summary</h3>
+            <div id="summaryContent"></div>
+          </div>
+
+          <div class="confirm-next-steps">
+            <h3>What happens next</h3>
+            <div class="next-step-item">
+              <div class="next-step-num">1</div>
+              <p><strong>Movers review your details</strong>Up to 5 verified, licensed movers will review your specific move requirements.</p>
+            </div>
+            <div class="next-step-item">
+              <div class="next-step-num">2</div>
+              <p><strong>You receive personalized quotes</strong>Each mover will contact you directly via phone or email within 24 hours.</p>
+            </div>
+            <div class="next-step-item">
+              <div class="next-step-num">3</div>
+              <p><strong>Compare and choose</strong>Take your time reviewing quotes. There's zero obligation to book with any mover.</p>
+            </div>
+          </div>
+
+          <div class="sherpa-quote">
+            <div class="sherpa-avatar">🧭</div>
+            <div>
+              <p>"Every great move starts with the right guide. We'll be with you every step of the way."</p>
+              <cite>— The SherpaMove Team</cite>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── STATE ──
+let currentStep = 0;
+const totalSteps = 7;
+
+const formData = {
+  moveType: '',
+  homeSize: '',
+  fromLocation: '',
+  toLocation: '',
+  moveDate: '',
+  moveFlexibility: '',
+  services: [],
+  budget: '',
+  accessType: '',
+  referralSource: '',
+  notes: '',
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: ''
+};
+
+const progressSteps = [14, 28, 42, 56, 70, 84, 100];
+
+// ── NAVIGATION ──
+function nextStep(step) {
+  if (!validateStep(step)) return;
+
+  collectData(step);
+
+  const current = document.getElementById(`step-${step}`);
+  current.classList.remove('active', 'back-active');
+  current.style.display = 'none';
+
+  currentStep = step + 1;
+
+  // Show funnel steps or confirmation
+  if (currentStep >= totalSteps) {
+    showConfirmation();
+    return;
+  }
+
+  const next = document.getElementById(`step-${currentStep}`);
+  next.style.display = 'block';
+  next.classList.remove('back-active');
+  next.classList.add('active');
+
+  updateProgress();
+}
+
+function prevStep(step) {
+  const current = document.getElementById(`step-${step}`);
+  current.classList.remove('active', 'back-active');
+  current.style.display = 'none';
+
+  currentStep = step - 1;
+  const prev = document.getElementById(`step-${currentStep}`);
+  prev.style.display = 'block';
+  prev.classList.remove('active');
+  void prev.offsetWidth; // force reflow
+  prev.classList.add('back-active');
+
+  updateProgress();
+}
+
+function updateProgress() {
+  const pct = progressSteps[Math.min(currentStep, totalSteps - 1)];
+  document.getElementById('progressBar').style.width = pct + '%';
+
+  // Update dots
+  const dots = document.querySelectorAll('.step-dot');
+  dots.forEach((dot, i) => {
+    dot.classList.remove('active', 'done');
+    if (i < currentStep) dot.classList.add('done');
+    if (i === currentStep) dot.classList.add('active');
+  });
+}
+
+// ── OPTION SELECTION (radio) ──
+function selectOption(label, field, value) {
+  // Deselect siblings
+  const name = label.querySelector('input[type="radio"]').name;
+  document.querySelectorAll(`input[name="${name}"]`).forEach(inp => {
+    inp.closest('label').classList.remove('selected');
+  });
+  label.classList.add('selected');
+  label.querySelector('input[type="radio"]').checked = true;
+  formData[field] = value;
+}
+
+// ── SERVICE TOGGLE (checkbox-style) ──
+const selectedServices = new Set();
+
+function toggleService(label, value) {
+  if (selectedServices.has(value)) {
+    selectedServices.delete(value);
+    label.classList.remove('selected');
+  } else {
+    selectedServices.add(value);
+    label.classList.add('selected');
+  }
+  formData.services = Array.from(selectedServices);
+}
+
+// ── VALIDATION ──
+function validateStep(step) {
+  let valid = true;
+
+  if (step === 0) {
+    if (!formData.moveType) {
+      shake(document.getElementById('step-0').querySelector('.option-grid'));
+      return false;
+    }
+  }
+
+  if (step === 1) {
+    if (!formData.homeSize) {
+      shake(document.getElementById('step-1').querySelector('.option-grid'));
+      return false;
+    }
+  }
+
+  if (step === 2) {
+    const from = document.getElementById('fromLocation');
+    const to = document.getElementById('toLocation');
+    if (!from.value.trim()) { from.classList.add('error'); valid = false; } else { from.classList.remove('error'); }
+    if (!to.value.trim()) { to.classList.add('error'); valid = false; } else { to.classList.remove('error'); }
+    if (!valid) return false;
+  }
+
+  if (step === 6) {
+    const fn = document.getElementById('firstName');
+    const ln = document.getElementById('lastName');
+    const em = document.getElementById('email');
+    const ph = document.getElementById('phone');
+
+    if (!fn.value.trim()) { fn.classList.add('error'); valid = false; } else fn.classList.remove('error');
+    if (!ln.value.trim()) { ln.classList.add('error'); valid = false; } else ln.classList.remove('error');
+    if (!em.value.trim() || !em.value.includes('@')) { em.classList.add('error'); valid = false; } else em.classList.remove('error');
+    if (!ph.value.trim() || ph.value.replace(/\D/g,'').length < 10) { ph.classList.add('error'); valid = false; } else ph.classList.remove('error');
+    if (!valid) return false;
+  }
+
+  return true;
+}
+
+function shake(el) {
+  el.style.animation = 'none';
+  void el.offsetWidth;
+  el.style.animation = 'shake 0.4s ease';
+}
+
+// Add shake keyframe dynamically
+const shakeStyle = document.createElement('style');
+shakeStyle.textContent = `@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }`;
+document.head.appendChild(shakeStyle);
+
+// ── COLLECT DATA ──
+function collectData(step) {
+  if (step === 2) {
+    formData.fromLocation = document.getElementById('fromLocation').value;
+    formData.toLocation = document.getElementById('toLocation').value;
+    formData.moveDate = document.getElementById('moveDate').value;
+    formData.moveFlexibility = document.getElementById('moveFlexibility').value;
+  }
+  if (step === 5) {
+    formData.accessType = document.getElementById('accessType').value;
+    formData.referralSource = document.getElementById('referralSource').value;
+    formData.notes = document.getElementById('notes').value;
+  }
+  if (step === 6) {
+    formData.firstName = document.getElementById('firstName').value;
+    formData.lastName = document.getElementById('lastName').value;
+    formData.email = document.getElementById('email').value;
+    formData.phone = document.getElementById('phone').value;
+  }
+}
+
+// ── SUBMIT / CONFIRMATION ──
+function submitForm() {
+  if (!validateStep(6)) return;
+  collectData(6);
+
+  // Hide all steps
+  document.querySelectorAll('.step').forEach(s => { s.style.display = 'none'; s.classList.remove('active','back-active'); });
+  document.getElementById('progressBar').style.width = '100%';
+
+  // Update dots all done
+  document.querySelectorAll('.step-dot').forEach(d => { d.classList.remove('active'); d.classList.add('done'); });
+
+  // Build summary
+  const dateDisplay = formData.moveDate ? new Date(formData.moveDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'TBD';
+  const servicesDisplay = formData.services.length ? formData.services.join(', ') : 'Basic move';
+
+  const summaryHTML = `
+    <div class="summary-row"><span class="label">Name</span><span class="value">${formData.firstName} ${formData.lastName}</span></div>
+    <div class="summary-row"><span class="label">Email</span><span class="value">${formData.email}</span></div>
+    <div class="summary-row"><span class="label">Phone</span><span class="value">${formData.phone}</span></div>
+    <div class="summary-row"><span class="label">Move Type</span><span class="value">${formData.moveType}</span></div>
+    <div class="summary-row"><span class="label">Home Size</span><span class="value">${formData.homeSize}</span></div>
+    <div class="summary-row"><span class="label">From</span><span class="value">${formData.fromLocation}</span></div>
+    <div class="summary-row"><span class="label">To</span><span class="value">${formData.toLocation}</span></div>
+    <div class="summary-row"><span class="label">Move Date</span><span class="value">${dateDisplay}</span></div>
+    <div class="summary-row"><span class="label">Budget</span><span class="value">${formData.budget || 'Not specified'}</span></div>
+    <div class="summary-row"><span class="label">Services</span><span class="value">${servicesDisplay}</span></div>
+  `;
+
+  document.getElementById('summaryContent').innerHTML = summaryHTML;
+  document.getElementById('confirmScreen').classList.add('active');
+
+  // Log to console (in prod, send to API/webhook)
+  console.log('SherpaMove Lead:', JSON.stringify(formData, null, 2));
+}
+
+// ── PHONE FORMAT ──
+function formatPhone(input) {
+  let v = input.value.replace(/\D/g, '').substring(0, 10);
+  if (v.length >= 6) {
+    v = '(' + v.substring(0,3) + ') ' + v.substring(3,6) + '-' + v.substring(6);
+  } else if (v.length >= 3) {
+    v = '(' + v.substring(0,3) + ') ' + v.substring(3);
+  }
+  input.value = v;
+}
+</script>
+</body>
+</html>
