@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summit Service — Premium Moving Concierge | SherpaMove</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --slate:        #1C2B35;
+  --slate-mid:    #2E404F;
+  --slate-light:  #3D5465;
+  --terracotta:   #C8573A;
+  --terra-hover:  #B04530;
+  --terra-light:  #E07A5F;
+  --sand:         #F2E8D9;
+  --sand-mid:     #E8D9C0;
+  --snow:         #FAF8F4;
+  --gold:         #D4A853;
+  --gold-light:   #E8C47A;
+  --gold-dark:    #A07830;
+  --forest:       #3A5A3F;
+  --ink:          #0F1A20;
+  --obsidian:     #080E12;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--obsidian);
+  color: var(--snow);
+  overflow-x: hidden;
+}
+
+/* ── GRAIN OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.6;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 0 48px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(8, 14, 18, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(212, 168, 83, 0.1);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+}
+
+.nav-logo-main {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.4);
+}
+
+.nav-logo-main span { color: var(--terracotta); }
+
+.nav-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255,255,255,0.1);
+}
+
+.nav-logo-summit {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.12em;
+  color: var(--gold);
+}
+
+.nav-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(212, 168, 83, 0.1);
+  border: 1px solid rgba(212, 168, 83, 0.2);
+  padding: 5px 14px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.nav-badge-dot {
+  width: 5px;
+  height: 5px;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: pulse 2.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.nav-link {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: rgba(255,255,255,0.4);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav-link:hover { color: rgba(255,255,255,0.8); }
+
+.nav-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--gold);
+  color: var(--obsidian);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 11px 22px;
+  border-radius: 2px;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.nav-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  padding: 140px 48px 100px;
+}
+
+/* Geometric line pattern */
+.hero-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-lines svg {
+  width: 100%;
+  height: 100%;
+  opacity: 0.06;
+}
+
+/* Gold glow orb */
+.hero-orb {
+  position: absolute;
+  right: -200px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(212,168,83,0.12) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 100px;
+  align-items: center;
+}
+
+/* HERO LEFT */
+.hero-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+  animation: fadeUp 0.8s ease both;
+}
+
+.eyebrow-line {
+  height: 1px;
+  width: 40px;
+  background: var(--gold);
+}
+
+.eyebrow-text {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(60px, 8vw, 110px);
+  letter-spacing: 0.03em;
+  line-height: 0.88;
+  color: var(--snow);
+  margin-bottom: 32px;
+  animation: fadeUp 0.8s 0.1s ease both;
+}
+
+.hero-title .gold { color: var(--gold); }
+.hero-title .outline {
+  -webkit-text-stroke: 1.5px rgba(255,255,255,0.25);
+  color: transparent;
+}
+
+.hero-desc {
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  font-size: clamp(16px, 1.8vw, 20px);
+  color: rgba(255,255,255,0.5);
+  line-height: 1.6;
+  max-width: 520px;
+  margin-bottom: 48px;
+  animation: fadeUp 0.8s 0.2s ease both;
+  font-weight: 400;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  animation: fadeUp 0.8s 0.3s ease both;
+}
+
+.btn-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--gold);
+  color: var(--obsidian);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 18px 36px;
+  border-radius: 2px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.btn-gold:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+.btn-outline-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--gold);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 17px 28px;
+  border-radius: 2px;
+  text-decoration: none;
+  border: 1px solid rgba(212,168,83,0.3);
+  transition: all 0.2s;
+}
+
+.btn-outline-gold:hover {
+  border-color: var(--gold);
+  background: rgba(212,168,83,0.06);
+}
+
+.hero-qualifiers {
+  margin-top: 40px;
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  animation: fadeUp 0.8s 0.4s ease both;
+}
+
+.qualifier {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.04em;
+}
+
+.qualifier-icon {
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(212,168,83,0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.qualifier-icon svg {
+  width: 9px; height: 9px;
+  stroke: var(--gold);
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* HERO RIGHT — Request Card */
+.request-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(212,168,83,0.15);
+  border-radius: 4px;
+  overflow: hidden;
+  animation: fadeUp 0.8s 0.3s ease both;
+}
+
+.request-card-header {
+  background: rgba(212,168,83,0.08);
+  border-bottom: 1px solid rgba(212,168,83,0.12);
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.request-card-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--gold);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.request-card-icon svg {
+  width: 16px; height: 16px;
+  stroke: var(--obsidian);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.request-card-header h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 17px;
+  color: var(--snow);
+  margin-bottom: 2px;
+}
+
+.request-card-header p {
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  font-weight: 500;
+}
+
+.request-form {
+  padding: 32px;
+}
+
+.form-field {
+  margin-bottom: 18px;
+}
+
+.form-field label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 8px;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  padding: 13px 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 2px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--snow);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.form-field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(255,255,255,0.3)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  cursor: pointer;
+}
+
+.form-field select option { background: var(--slate); color: var(--snow); }
+
+.form-field input::placeholder,
+.form-field textarea::placeholder { color: rgba(255,255,255,0.2); }
+
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  border-color: rgba(212,168,83,0.5);
+  background: rgba(212,168,83,0.04);
+}
+
+.form-field input.error { border-color: rgba(220,80,80,0.6); }
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.walkthrough-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.toggle-option {
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 2px;
+  padding: 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.toggle-option:hover {
+  border-color: rgba(212,168,83,0.3);
+  background: rgba(212,168,83,0.04);
+}
+
+.toggle-option.selected {
+  border-color: var(--gold);
+  background: rgba(212,168,83,0.1);
+}
+
+.toggle-option .t-icon { font-size: 18px; margin-bottom: 4px; }
+
+.toggle-option .t-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.04em;
+}
+
+.toggle-option.selected .t-label { color: var(--gold); }
+
+.form-submit {
+  width: 100%;
+  padding: 16px;
+  background: var(--gold);
+  color: var(--obsidian);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.form-submit:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+.form-privacy {
+  font-size: 10px;
+  color: rgba(255,255,255,0.2);
+  text-align: center;
+  margin-top: 14px;
+  line-height: 1.6;
+  letter-spacing: 0.03em;
+}
+
+/* ── GOLD RULE ── */
+.gold-rule {
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(212,168,83,0.3), transparent);
+  margin: 0;
+}
+
+/* ── WHAT IS SUMMIT ── */
+.summit-section {
+  padding: 120px 48px;
+  background: var(--obsidian);
+  position: relative;
+}
+
+.summit-section::before {
+  content: 'SUMMIT';
+  position: absolute;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 300px;
+  color: rgba(255,255,255,0.015);
+  letter-spacing: 0.1em;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.summit-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 100px;
+  align-items: center;
+}
+
+.section-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.section-eyebrow-line { height: 1px; width: 30px; background: var(--gold); }
+
+.section-eyebrow-text {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.section-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(32px, 3.5vw, 48px);
+  color: var(--snow);
+  line-height: 1.15;
+  margin-bottom: 20px;
+}
+
+.section-title em { color: var(--gold); font-style: italic; }
+
+.section-body {
+  font-size: 15px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.8;
+  font-weight: 300;
+  margin-bottom: 32px;
+}
+
+.qualifies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.qualifies-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 4px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.qualifies-item:hover {
+  border-color: rgba(212,168,83,0.2);
+  background: rgba(212,168,83,0.03);
+}
+
+.qualifies-item-icon {
+  width: 36px;
+  height: 36px;
+  background: rgba(212,168,83,0.1);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.qualifies-item-icon svg {
+  width: 16px; height: 16px;
+  stroke: var(--gold);
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.qualifies-item-text strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--snow);
+  margin-bottom: 2px;
+}
+
+.qualifies-item-text span {
+  font-size: 12px;
+  color: rgba(255,255,255,0.35);
+}
+
+/* ── PROCESS ── */
+.process-section {
+  padding: 120px 48px;
+  background: rgba(255,255,255,0.02);
+  border-top: 1px solid rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.process-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.process-header {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 80px;
+}
+
+.process-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  position: relative;
+  gap: 0;
+}
+
+.process-steps::before {
+  content: '';
+  position: absolute;
+  top: 36px;
+  left: calc(12.5% + 18px);
+  right: calc(12.5% + 18px);
+  height: 1px;
+  background: linear-gradient(to right, rgba(212,168,83,0.4), rgba(212,168,83,0.1), rgba(212,168,83,0.4));
+}
+
+.process-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 24px;
+  position: relative;
+}
+
+.process-step-num {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 1px solid rgba(212,168,83,0.3);
+  background: var(--obsidian);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 1;
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.process-step:hover .process-step-num {
+  border-color: var(--gold);
+  background: rgba(212,168,83,0.08);
+}
+
+.process-step-num svg {
+  width: 24px; height: 24px;
+  stroke: var(--gold);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.process-step-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+
+.process-step h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 17px;
+  color: var(--snow);
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+
+.process-step p {
+  font-size: 12px;
+  color: rgba(255,255,255,0.35);
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+/* ── WHAT'S INCLUDED ── */
+.included-section {
+  padding: 120px 48px;
+  background: var(--obsidian);
+}
+
+.included-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.included-header {
+  text-align: center;
+  max-width: 560px;
+  margin: 0 auto 70px;
+}
+
+.included-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  background: rgba(212,168,83,0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.included-card {
+  background: var(--obsidian);
+  padding: 44px 36px;
+  transition: background 0.3s;
+  position: relative;
+}
+
+.included-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transition: transform 0.3s;
+  transform-origin: left;
+}
+
+.included-card:hover { background: rgba(212,168,83,0.03); }
+.included-card:hover::before { transform: scaleX(1); }
+
+.included-card-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 48px;
+  letter-spacing: 0.04em;
+  color: rgba(212,168,83,0.15);
+  line-height: 1;
+  margin-bottom: 16px;
+  transition: color 0.3s;
+}
+
+.included-card:hover .included-card-num { color: rgba(212,168,83,0.3); }
+
+.included-card h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px;
+  color: var(--snow);
+  margin-bottom: 12px;
+  line-height: 1.2;
+}
+
+.included-card p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.75;
+  font-weight: 300;
+}
+
+.included-card .card-tag {
+  display: inline-block;
+  margin-top: 16px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border-bottom: 1px solid rgba(212,168,83,0.3);
+  padding-bottom: 2px;
+}
+
+/* ── COMPARE TIERS ── */
+.compare-section {
+  padding: 120px 48px;
+  background: rgba(255,255,255,0.015);
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+
+.compare-inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.compare-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.compare-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.compare-table th {
+  padding: 20px 28px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.compare-table th.highlight {
+  background: rgba(212,168,83,0.06);
+  border: 1px solid rgba(212,168,83,0.15);
+  border-bottom: none;
+  color: var(--gold);
+  border-radius: 4px 4px 0 0;
+}
+
+.compare-table td {
+  padding: 18px 28px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.compare-table td:first-child { color: rgba(255,255,255,0.7); font-weight: 500; }
+
+.compare-table td.highlight {
+  background: rgba(212,168,83,0.04);
+  border-left: 1px solid rgba(212,168,83,0.12);
+  border-right: 1px solid rgba(212,168,83,0.12);
+  color: var(--snow);
+  font-weight: 500;
+}
+
+.compare-table tr:last-child td.highlight {
+  border-bottom: 1px solid rgba(212,168,83,0.12);
+  border-radius: 0 0 4px 4px;
+}
+
+.check-gold { color: var(--gold); font-size: 16px; }
+.check-dim { color: rgba(255,255,255,0.2); font-size: 16px; }
+
+/* ── FINAL CTA ── */
+.final-cta {
+  padding: 140px 48px;
+  text-align: center;
+  background: var(--obsidian);
+  position: relative;
+  overflow: hidden;
+}
+
+.final-cta-orb {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(212,168,83,0.07) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.final-cta-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.final-cta h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(52px, 7vw, 88px);
+  letter-spacing: 0.04em;
+  color: var(--snow);
+  line-height: 0.9;
+  margin-bottom: 24px;
+}
+
+.final-cta h2 .gold { color: var(--gold); }
+
+.final-cta p {
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  font-size: 18px;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 48px;
+  line-height: 1.6;
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--obsidian);
+  border-top: 1px solid rgba(212,168,83,0.1);
+  padding: 40px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.2);
+  text-decoration: none;
+}
+
+.footer-logo span { color: rgba(200,87,58,0.4); }
+.footer-summit { color: rgba(212,168,83,0.4); margin-left: 8px; }
+
+.footer-links {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+}
+
+.footer-links a {
+  font-size: 11px;
+  color: rgba(255,255,255,0.2);
+  text-decoration: none;
+  letter-spacing: 0.06em;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover { color: rgba(255,255,255,0.5); }
+
+.footer-copy {
+  font-size: 11px;
+  color: rgba(255,255,255,0.15);
+  letter-spacing: 0.04em;
+}
+
+/* ── CONFIRMATION SCREEN ── */
+.confirm-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(8,14,18,0.95);
+  z-index: 500;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(12px);
+}
+
+.confirm-overlay.active {
+  display: flex;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.confirm-box {
+  max-width: 520px;
+  width: 90%;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(212,168,83,0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.confirm-box-header {
+  background: rgba(212,168,83,0.08);
+  border-bottom: 1px solid rgba(212,168,83,0.12);
+  padding: 36px;
+  text-align: center;
+}
+
+.confirm-check {
+  width: 64px;
+  height: 64px;
+  border: 2px solid var(--gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.confirm-check svg {
+  width: 28px; height: 28px;
+  stroke: var(--gold);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.confirm-box-header h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 26px;
+  color: var(--snow);
+  margin-bottom: 8px;
+}
+
+.confirm-box-header p {
+  font-size: 14px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.6;
+}
+
+.confirm-box-body {
+  padding: 36px;
+}
+
+.confirm-detail {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 13px;
+}
+
+.confirm-detail:last-of-type { border-bottom: none; }
+.confirm-detail .label { color: rgba(255,255,255,0.3); }
+.confirm-detail .value { color: var(--snow); font-weight: 500; }
+
+.confirm-next {
+  margin-top: 24px;
+  padding: 20px;
+  background: rgba(212,168,83,0.05);
+  border: 1px solid rgba(212,168,83,0.1);
+  border-radius: 3px;
+}
+
+.confirm-next p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.7;
+  text-align: center;
+}
+
+.confirm-next strong { color: var(--gold); font-weight: 500; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 960px) {
+  nav { padding: 0 20px; }
+  .nav-badge { display: none; }
+  .hero { padding: 110px 24px 80px; }
+  .hero-inner { grid-template-columns: 1fr; gap: 60px; }
+  .summit-inner { grid-template-columns: 1fr; gap: 60px; }
+  .process-steps { grid-template-columns: 1fr 1fr; gap: 48px; }
+  .process-steps::before { display: none; }
+  .included-grid { grid-template-columns: 1fr; }
+  .summit-section { padding: 80px 24px; }
+  .process-section { padding: 80px 24px; }
+  .included-section { padding: 80px 24px; }
+  .compare-section { padding: 80px 24px; }
+  .final-cta { padding: 100px 24px; }
+  footer { flex-direction: column; gap: 20px; text-align: center; padding: 32px 24px; }
+  .footer-links { flex-wrap: wrap; justify-content: center; gap: 16px; }
+  .form-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="nav-logo-main"><span>Sherpa</span>MOVE</span>
+    <div class="nav-divider"></div>
+    <span class="nav-logo-summit">Summit Service</span>
+  </a>
+  <div class="nav-badge">
+    <div class="nav-badge-dot"></div>
+    Premium Concierge
+  </div>
+  <div class="nav-right">
+    <a href="#process" class="nav-link">How It Works</a>
+    <a href="#included" class="nav-link">What's Included</a>
+    <a href="#request" class="nav-cta">Request a Walkthrough</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero" id="top">
+  <div class="hero-lines">
+    <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <line x1="0" y1="200" x2="1440" y2="700" stroke="#D4A853" stroke-width="0.5"/>
+      <line x1="0" y1="400" x2="1440" y2="100" stroke="#D4A853" stroke-width="0.5"/>
+      <line x1="200" y1="0" x2="800" y2="900" stroke="#D4A853" stroke-width="0.5"/>
+      <line x1="900" y1="0" x2="400" y2="900" stroke="#D4A853" stroke-width="0.5"/>
+      <circle cx="480" cy="450" r="300" stroke="#D4A853" stroke-width="0.5" fill="none"/>
+      <circle cx="480" cy="450" r="200" stroke="#D4A853" stroke-width="0.3" fill="none"/>
+    </svg>
+  </div>
+  <div class="hero-orb"></div>
+
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow">
+        <div class="eyebrow-line"></div>
+        <div class="eyebrow-text">Summit Service by SherpaMove</div>
+      </div>
+      <h1 class="hero-title">
+        Your Move.<br>
+        <span class="gold">Handled</span><br>
+        <span class="outline">Perfectly.</span>
+      </h1>
+      <p class="hero-desc">
+        For complex, large-scale moves that demand more than a quote — a dedicated concierge, in-home walkthrough, and white-glove coordination from first call to final box.
+      </p>
+      <div class="hero-actions">
+        <a href="#request" class="btn-gold">
+          Request a Walkthrough
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a href="#process" class="btn-outline-gold">See How It Works</a>
+      </div>
+      <div class="hero-qualifiers">
+        <div class="qualifier">
+          <div class="qualifier-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          4+ Bedroom Homes
+        </div>
+        <div class="qualifier">
+          <div class="qualifier-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          2,500+ Sq Ft
+        </div>
+        <div class="qualifier">
+          <div class="qualifier-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Specialty Items
+        </div>
+        <div class="qualifier">
+          <div class="qualifier-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+          Complex Moves
+        </div>
+      </div>
+    </div>
+
+    <!-- REQUEST FORM -->
+    <div class="request-card" id="request">
+      <div class="request-card-header">
+        <div class="request-card-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <div>
+          <h3>Request Your Walkthrough</h3>
+          <p>A concierge will call you within 24 hours</p>
+        </div>
+      </div>
+
+      <div class="request-form">
+        <div class="form-row">
+          <div class="form-field">
+            <label>First Name</label>
+            <input type="text" id="firstName" placeholder="Jane">
+          </div>
+          <div class="form-field">
+            <label>Last Name</label>
+            <input type="text" id="lastName" placeholder="Smith">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>Email Address</label>
+          <input type="email" id="email" placeholder="jane@example.com">
+        </div>
+
+        <div class="form-field">
+          <label>Phone Number</label>
+          <input type="tel" id="phone" placeholder="(555) 000-0000" oninput="formatPhone(this)">
+        </div>
+
+        <div class="form-field">
+          <label>Home Size</label>
+          <select id="homeSize">
+            <option value="">Select your home size...</option>
+            <option>4 Bedrooms (~2,500 sq ft)</option>
+            <option>5 Bedrooms (~3,500 sq ft)</option>
+            <option>6+ Bedrooms / Estate (4,000+ sq ft)</option>
+            <option>Large Commercial / Office</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label>Moving From</label>
+            <input type="text" id="fromLocation" placeholder="City or Zip">
+          </div>
+          <div class="form-field">
+            <label>Moving To</label>
+            <input type="text" id="toLocation" placeholder="City or Zip">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label>Preferred Walkthrough Type</label>
+          <div class="walkthrough-toggle">
+            <div class="toggle-option selected" id="toggle-inperson" onclick="selectToggle('inperson')">
+              <div class="t-icon">🏠</div>
+              <div class="t-label">In-Person</div>
+            </div>
+            <div class="toggle-option" id="toggle-virtual" onclick="selectToggle('virtual')">
+              <div class="t-icon">💻</div>
+              <div class="t-label">Virtual</div>
+            </div>
+          </div>
+          <input type="hidden" id="walkthroughType" value="In-Person">
+        </div>
+
+        <div class="form-field">
+          <label>Specialty Items? (optional)</label>
+          <input type="text" id="specialtyItems" placeholder="e.g. Piano, safe, antiques, artwork...">
+        </div>
+
+        <button class="form-submit" onclick="submitSummit()">
+          Request My Walkthrough
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+        <p class="form-privacy">By submitting you agree to be contacted by a SherpaMove concierge. Your information is never shared with third parties without your consent.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="gold-rule"></div>
+
+<!-- ── WHAT IS SUMMIT ── -->
+<section class="summit-section">
+  <div class="summit-inner">
+    <div>
+      <div class="section-eyebrow">
+        <div class="section-eyebrow-line"></div>
+        <div class="section-eyebrow-text">Who It's For</div>
+      </div>
+      <h2 class="section-title">Not every move is <em>standard.</em></h2>
+      <p class="section-body">Summit Service was built for moves that require more than a phone quote. Large homes, rare items, complex logistics — these deserve a concierge who walks the space, understands the challenge, and coordinates every detail.</p>
+      <a href="#request" class="btn-gold" style="display: inline-flex;">Check If You Qualify →</a>
+    </div>
+
+    <div class="qualifies-list">
+      <div class="qualifies-item">
+        <div class="qualifies-item-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+        </div>
+        <div class="qualifies-item-text">
+          <strong>4+ Bedroom Homes</strong>
+          <span>Large family homes, estates, and multi-floor properties</span>
+        </div>
+      </div>
+      <div class="qualifies-item">
+        <div class="qualifies-item-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <div class="qualifies-item-text">
+          <strong>2,500+ Square Feet</strong>
+          <span>Homes where volume and logistics demand on-site assessment</span>
+        </div>
+      </div>
+      <div class="qualifies-item">
+        <div class="qualifies-item-icon">
+          <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+        </div>
+        <div class="qualifies-item-text">
+          <strong>Long Distance & Interstate</strong>
+          <span>Cross-state moves where detailed planning is essential</span>
+        </div>
+      </div>
+      <div class="qualifies-item">
+        <div class="qualifies-item-icon">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <div class="qualifies-item-text">
+          <strong>Specialty & High-Value Items</strong>
+          <span>Pianos, safes, fine art, antiques, wine collections</span>
+        </div>
+      </div>
+      <div class="qualifies-item">
+        <div class="qualifies-item-icon">
+          <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </div>
+        <div class="qualifies-item-text">
+          <strong>Complex Logistics</strong>
+          <span>Difficult access, multiple properties, tight timelines</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="gold-rule"></div>
+
+<!-- ── PROCESS ── -->
+<section class="process-section" id="process">
+  <div class="process-inner">
+    <div class="process-header">
+      <div class="section-eyebrow" style="justify-content: center;">
+        <div class="section-eyebrow-line"></div>
+        <div class="section-eyebrow-text">The Process</div>
+        <div class="section-eyebrow-line"></div>
+      </div>
+      <h2 class="section-title" style="text-align: center;">Four steps to a <em>perfect move</em></h2>
+    </div>
+
+    <div class="process-steps">
+      <div class="process-step">
+        <div class="process-step-num">
+          <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </div>
+        <div class="process-step-label">Step 01</div>
+        <h3>Submit Your Request</h3>
+        <p>Fill out the short form with your home and move details. Takes under 3 minutes.</p>
+      </div>
+
+      <div class="process-step">
+        <div class="process-step-num">
+          <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        </div>
+        <div class="process-step-label">Step 02</div>
+        <h3>Concierge Calls You</h3>
+        <p>Your dedicated SherpaMove concierge calls within 24 hours to learn about your move and schedule the walkthrough.</p>
+      </div>
+
+      <div class="process-step">
+        <div class="process-step-num">
+          <svg viewBox="0 0 24 24"><path d="M1 3h15v13H1zM16 8l6 3-6 3V8z"/></svg>
+        </div>
+        <div class="process-step-label">Step 03</div>
+        <h3>In-Home or Virtual Walkthrough</h3>
+        <p>Your concierge walks every room — in person or via video — building a complete inventory and move plan.</p>
+      </div>
+
+      <div class="process-step">
+        <div class="process-step-num">
+          <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div class="process-step-label">Step 04</div>
+        <h3>Matched, Coordinated, Done</h3>
+        <p>We match you with 2 elite movers. Your concierge stays with you through move day to ensure everything goes perfectly.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="gold-rule"></div>
+
+<!-- ── WHAT'S INCLUDED ── -->
+<section class="included-section" id="included">
+  <div class="included-inner">
+    <div class="included-header">
+      <div class="section-eyebrow" style="justify-content: center;">
+        <div class="section-eyebrow-line"></div>
+        <div class="section-eyebrow-text">What's Included</div>
+        <div class="section-eyebrow-line"></div>
+      </div>
+      <h2 class="section-title" style="text-align: center;">Everything you need, <em>nothing you don't</em></h2>
+    </div>
+
+    <div class="included-grid">
+      <div class="included-card">
+        <div class="included-card-num">01</div>
+        <h3>Dedicated Concierge Contact</h3>
+        <p>One person, one number. Your concierge is your single point of contact from the moment you request a walkthrough through move day. No call centers, no hold music.</p>
+        <span class="card-tag">Exclusive to Summit</span>
+      </div>
+
+      <div class="included-card">
+        <div class="included-card-num">02</div>
+        <h3>Professional Home Walkthrough</h3>
+        <p>Your concierge conducts a thorough assessment of every room, item, and access consideration — in person or virtually — building a complete inventory and logistics plan.</p>
+        <span class="card-tag">In-Person or Virtual</span>
+      </div>
+
+      <div class="included-card">
+        <div class="included-card-num">03</div>
+        <h3>Semi-Exclusive Mover Matching</h3>
+        <p>Your detailed move profile goes to just 2 carefully selected, elite moving companies — not 5. Fewer movers, higher quality bids, more attention to your specific needs.</p>
+        <span class="card-tag">Max 2 Movers</span>
+      </div>
+
+      <div class="included-card">
+        <div class="included-card-num">04</div>
+        <h3>Move Day Coordination</h3>
+        <p>Your concierge is available on move day to handle any issues, communicate with the crew, and ensure the plan is executed exactly as agreed. Real-time support when it matters most.</p>
+        <span class="card-tag">Day-Of Support</span>
+      </div>
+
+      <div class="included-card">
+        <div class="included-card-num">05</div>
+        <h3>Specialty Item Handling Guidance</h3>
+        <p>Pianos, safes, fine art, wine collections, antiques — your concierge ensures movers are properly equipped and briefed on every high-value or fragile item before move day.</p>
+        <span class="card-tag">High-Value Items</span>
+      </div>
+
+      <div class="included-card">
+        <div class="included-card-num">06</div>
+        <h3>Always Free for Customers</h3>
+        <p>Summit Service costs you nothing. Our premium model is funded by the moving companies who pay for access to our highest-quality, most detailed leads.</p>
+        <span class="card-tag">100% Free</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="gold-rule"></div>
+
+<!-- ── COMPARE ── -->
+<section class="compare-section">
+  <div class="compare-inner">
+    <div class="compare-header">
+      <div class="section-eyebrow" style="justify-content: center;">
+        <div class="section-eyebrow-line"></div>
+        <div class="section-eyebrow-text">Compare Plans</div>
+        <div class="section-eyebrow-line"></div>
+      </div>
+      <h2 class="section-title" style="text-align: center;">Standard vs <em>Summit</em></h2>
+    </div>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th style="width: 40%;">Feature</th>
+          <th style="width: 30%;">Standard</th>
+          <th class="highlight" style="width: 30%;">⭐ Summit Service</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Free for customers</td>
+          <td><span class="check-gold">✓</span></td>
+          <td class="highlight"><span class="check-gold">✓</span></td>
+        </tr>
+        <tr>
+          <td>Online quote form</td>
+          <td><span class="check-gold">✓</span></td>
+          <td class="highlight"><span class="check-gold">✓</span></td>
+        </tr>
+        <tr>
+          <td>Movers matched</td>
+          <td>Up to 5</td>
+          <td class="highlight">Max 2 (elite)</td>
+        </tr>
+        <tr>
+          <td>Dedicated concierge</td>
+          <td><span class="check-dim">—</span></td>
+          <td class="highlight"><span class="check-gold">✓</span></td>
+        </tr>
+        <tr>
+          <td>In-home walkthrough</td>
+          <td><span class="check-dim">—</span></td>
+          <td class="highlight"><span class="check-gold">✓</span></td>
+        </tr>
+        <tr>
+          <td>Virtual walkthrough option</td>
+          <td><span class="check-dim">—</span></td>
+          <td class="highlight"><span class="check-gold">✓</span></td>
+        </tr>
+        <tr>
+          <td>Complete home inventory</td>
+          <td><span class="check-dim">—</span></td>
+          <td class="highlight"><span class="check-gold">✓</span></td>
+        </tr>
+        <tr>
+          <td>Specialty item coordination</td>
+          <td><span class="check-dim">—</span></td>
+          <td class="highlight"><span class="check-gold">✓</span></td>
+        </tr>
+        <tr>
+          <td>Move day support</td>
+          <td><span class="check-dim">—</span></td>
+          <td class="highlight"><span class="check-gold">✓</span></td>
+        </tr>
+        <tr>
+          <td>Best for</td>
+          <td>Apartments, small homes</td>
+          <td class="highlight">4BR+, 2,500+ sq ft, complex moves</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── FINAL CTA ── -->
+<section class="final-cta">
+  <div class="final-cta-orb"></div>
+  <div class="final-cta-inner">
+    <h2>Your Move<br>Deserves <span class="gold">More.</span></h2>
+    <p>Request your Summit Service walkthrough today. A dedicated concierge will call you within 24 hours.</p>
+    <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+      <a href="#request" class="btn-gold" style="font-size: 15px; padding: 20px 44px;">
+        Request a Walkthrough →
+      </a>
+      <a href="index.html" class="btn-outline-gold">
+        Back to SherpaMove
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <a href="index.html" class="footer-logo">
+    <span>Sherpa</span>MOVE
+    <span class="footer-summit"> · Summit Service</span>
+  </a>
+  <ul class="footer-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="funnel.html">Standard Quotes</a></li>
+    <li><a href="#">Privacy Policy</a></li>
+    <li><a href="mailto:summit@sherpamove.com">Contact</a></li>
+  </ul>
+  <div class="footer-copy">© 2025 SherpaMove</div>
+</footer>
+
+<!-- ── CONFIRMATION OVERLAY ── -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-box-header">
+      <div class="confirm-check">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2>Request Received</h2>
+      <p>Your Summit Service walkthrough request has been submitted. Your dedicated concierge will call you within 24 hours.</p>
+    </div>
+    <div class="confirm-box-body">
+      <div id="confirmDetails"></div>
+      <div class="confirm-next">
+        <p>Look out for a call from a <strong>SherpaMove concierge</strong> — they'll introduce themselves, learn more about your move, and schedule your walkthrough at a time that works for you.</p>
+      </div>
+      <button class="btn-gold" style="width: 100%; margin-top: 20px; justify-content: center;" onclick="document.getElementById('confirmOverlay').classList.remove('active')">Done</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let walkthroughType = 'In-Person';
+
+function selectToggle(type) {
+  walkthroughType = type === 'inperson' ? 'In-Person' : 'Virtual';
+  document.getElementById('toggle-inperson').classList.toggle('selected', type === 'inperson');
+  document.getElementById('toggle-virtual').classList.toggle('selected', type === 'virtual');
+  document.getElementById('walkthroughType').value = walkthroughType;
+}
+
+function formatPhone(input) {
+  let v = input.value.replace(/\D/g, '').substring(0, 10);
+  if (v.length >= 6) v = '(' + v.substring(0,3) + ') ' + v.substring(3,6) + '-' + v.substring(6);
+  else if (v.length >= 3) v = '(' + v.substring(0,3) + ') ' + v.substring(3);
+  input.value = v;
+}
+
+function submitSummit() {
+  const fields = [
+    { id: 'firstName', label: 'First Name' },
+    { id: 'lastName', label: 'Last Name' },
+    { id: 'email', label: 'Email' },
+    { id: 'phone', label: 'Phone' },
+    { id: 'fromLocation', label: 'Moving From' },
+    { id: 'toLocation', label: 'Moving To' },
+  ];
+
+  let valid = true;
+
+  fields.forEach(f => {
+    const el = document.getElementById(f.id);
+    const val = el.value.trim();
+    if (!val || (f.id === 'email' && !val.includes('@'))) {
+      el.classList.add('error');
+      valid = false;
+    } else {
+      el.classList.remove('error');
+    }
+  });
+
+  if (!valid) return;
+
+  const data = {
+    firstName: document.getElementById('firstName').value,
+    lastName: document.getElementById('lastName').value,
+    email: document.getElementById('email').value,
+    phone: document.getElementById('phone').value,
+    homeSize: document.getElementById('homeSize').value,
+    fromLocation: document.getElementById('fromLocation').value,
+    toLocation: document.getElementById('toLocation').value,
+    walkthroughType: walkthroughType,
+    specialtyItems: document.getElementById('specialtyItems').value,
+    tier: 'Summit Service',
+    submittedAt: new Date().toISOString()
+  };
+
+  // Build confirm details
+  const details = [
+    { label: 'Name', value: `${data.firstName} ${data.lastName}` },
+    { label: 'Email', value: data.email },
+    { label: 'Phone', value: data.phone },
+    { label: 'Home Size', value: data.homeSize || 'Not specified' },
+    { label: 'Route', value: `${data.fromLocation} → ${data.toLocation}` },
+    { label: 'Walkthrough', value: data.walkthroughType },
+  ];
+
+  document.getElementById('confirmDetails').innerHTML = details
+    .map(d => `<div class="confirm-detail"><span class="label">${d.label}</span><span class="value">${d.value}</span></div>`)
+    .join('');
+
+  document.getElementById('confirmOverlay').classList.add('active');
+
+  // Log to console — replace with your webhook/API call
+  console.log('Summit Service Lead:', JSON.stringify(data, null, 2));
+}
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+  });
+});
+</script>
+</body>
+</html>
